@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# 提交前自检，两道：
+#   1. 冒烟自检（每个脚本 --help 可用、--selftest 通过、shell 语法正确）
+#   2. 密钥 / 个人路径 / 账号标识 / 实验指纹 / 二进制文件
+# 启用方式：git config core.hooksPath .githooks   （本仓库已默认设置）
+#
+# 为什么卡在这里：本项目用到的派生密钥**不可轮换**（同一账号重新登录会复现同一把），
+# 一旦进过 git 历史就等于永久泄露，force-push 也救不回来。
+set -u
+ROOT="$(git rev-parse --show-toplevel)"
+bash "$ROOT/scripts/selftest.sh" || {
+  echo
+  echo "提交已阻止：冒烟自检没过。"
+  exit 1
+}
+bash "$ROOT/scripts/check_no_secrets.sh" "$ROOT" || {
+  echo
+  echo "提交已阻止。若规则本身有误，请改 scripts/check_no_secrets.sh —— 不要用 --no-verify 绕过。"
+  exit 1
+}
+exit 0

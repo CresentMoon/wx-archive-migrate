@@ -1,0 +1,8 @@
+# 运行依赖。除下面这一条，所有脚本只用 Python 标准库。
+#
+# cryptography 用在需要真正做 AES 的地方：wxdec.py（2.x/3.x 单库解密）、
+# wxdec3x.py / wxmedia.py / wxvoice.py / wxrows.py / wxstart.py / wxsync.py（经 wxcom）、
+# wx4_decrypt.py、sweep_any_reserve.py。
+#
+# 不装也能用：所有脚本的 `--help` 都只依赖标准库；`--selftest` 在缺依赖时报 SKIP(77)。
+cryptography>=41

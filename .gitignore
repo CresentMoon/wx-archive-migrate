@@ -1,0 +1,48 @@
+# ---- 绝不提交：数据库、转储、密钥、导出内容 ----
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.bin
+*.raw
+*_KEYS*
+*KEYS*.txt
+keys*.txt
+*.key
+*.pem
+*/snap_*.json
+snap_*.json
+
+# ---- 账号数据与导出 ----
+dump/
+export/
+backup/
+out/
+pre_*/
+_plain_*/
+_plain_*.db
+*.plain.db
+聊天记录*
+消息.csv
+联系人.csv
+
+# ---- 本机工具产物 ----
+WeChat2/
+WeChat Files/
+xwechat_files/
+*:Zone.Identifier
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# ---- 发布流水线的临时目录 ----
+_publish/
+_stage/
+
+# ---- 私有区：唯一的「一个仓库目录」里的非公开部分 ----
+# 实验脚本、原库副本、内存转储、密钥、私有名单。**永不提交**，
+# 但随 Syncthing 全量备份到 NAS；自带本地 git 仓库记录实验历史（见 private/README.md）。
+/private/

@@ -1,0 +1,42 @@
+name: smoke
+
+# 冒烟自检：scripts/selftest.sh。与 .githooks/pre-commit 跑的是同一份脚本。
+#
+# 它防的是**回归**，不是安全：以前 2.x 那批脚本连 --help 都没有，或者在没有
+# WinDLL / libcrypto 的机器上 import 期就崩 —— 这类问题本地不跑就发现不了。
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 安装运行依赖
+        run: python -m pip install --quiet -r requirements.txt
+      - name: 冒烟自检（--help / --selftest / bash -n）
+        run: bash scripts/selftest.sh
+
+  # 同一份自检再跑一遍 **Windows 侧 Python**。
+  #
+  # 这条是补的，而且补得有理由：`dump_mem.py` 曾经把 `ctypes.WinDLL` 写在模块顶层 ⇒
+  # 只有 Windows 上才会暴露的代码路径，在 Linux CI 里永远是绿的。另外 `sweep*.py`
+  # 在 Windows 上加载不到 libcrypto（wheel 是静态 OpenSSL），自检应当报 SKIP(77)
+  # 而不是 FAIL —— 这类"平台差异"也只有在这一条里才看得见。
+  selftest-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 安装运行依赖
+        run: python -m pip install --quiet -r requirements.txt
+      - name: 冒烟自检（Windows 侧 Python）
+        shell: bash
+        run: PYTHON=python bash scripts/selftest.sh
